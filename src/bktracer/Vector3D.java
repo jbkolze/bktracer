@@ -49,6 +49,19 @@ public class Vector3D {
                             x * crossProd.y - y * crossProd.x);
     }
 
+    public double magnitude() {
+        return Math.sqrt(x * x + y * y + z * z);
+    }
+
+    public double magnitudeSquared() {
+        return x * x + y * y + z * z;
+    }
+
+    public Vector3D unitVector() {
+        double mag = this.magnitude();
+        return new Vector3D(x / mag, y / mag, z / mag);
+    }
+
     @Override
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
