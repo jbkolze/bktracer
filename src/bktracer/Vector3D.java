@@ -39,6 +39,16 @@ public class Vector3D {
         return new Vector3D(x - subVec.x, y - subVec.y, z - subVec.z);
     }
 
+    public Vector3D dotProduct(Vector3D dotProd) {
+        return new Vector3D(x * dotProd.x, y * dotProd.y, z * dotProd.z);
+    }
+
+    public Vector3D crossProduct(Vector3D crossProd) {
+        return new Vector3D(y * crossProd.z - z * crossProd.y,
+                            z * crossProd.x - x * crossProd.z,
+                            x * crossProd.y - y * crossProd.x);
+    }
+
     @Override
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
