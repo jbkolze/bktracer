@@ -39,8 +39,8 @@ public class Vector3D {
         return new Vector3D(x - subVec.x, y - subVec.y, z - subVec.z);
     }
 
-    public Vector3D dotProduct(Vector3D dotProd) {
-        return new Vector3D(x * dotProd.x, y * dotProd.y, z * dotProd.z);
+    public double dotProduct(Vector3D dotProd) {
+        return x * dotProd.x + y * dotProd.y + z * dotProd.z;
     }
 
     public Vector3D crossProduct(Vector3D crossProd) {
