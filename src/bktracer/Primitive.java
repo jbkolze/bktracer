@@ -6,5 +6,5 @@ package bktracer;
 
 public abstract class Primitive {
     public abstract Vector3D intersect(Ray ray);
-    public abstract Vector3D normal(Vector3D point);
+    public abstract Ray normal(Vector3D point);
 }

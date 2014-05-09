@@ -29,7 +29,7 @@ public class Sphere extends Primitive {
         }
 
         double tClosest = originToCenter.dotProduct(ray.getDirection());
-        if (tClosest < 0 && insideSphere) return new Vector3D();
+        if (tClosest < 0 && !insideSphere) return new Vector3D();
 
         double tHalfChordSquared = radiusSquared - lengthOCSquared + (tClosest * tClosest);
         if (tHalfChordSquared < 0) return new Vector3D();
@@ -44,10 +44,11 @@ public class Sphere extends Primitive {
         return ray.findT(t);
     }
 
-    public Vector3D normal(Vector3D point) {
+    public Ray normal(Vector3D point) {
         double x = (point.getX() - center.getX()) / radius;
         double y = (point.getY() - center.getY()) / radius;
         double z = (point.getZ() - center.getZ()) / radius;
-        return new Vector3D(x, y, z);
+        Vector3D direction = new Vector3D(x, y, z);
+        return new Ray(point, direction);
     }
 }
