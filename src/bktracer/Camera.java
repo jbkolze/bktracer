@@ -1,5 +1,11 @@
 package bktracer;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Created by brandon on 5/7/14.
  */
@@ -15,7 +21,7 @@ public class Camera {
     private int resHeight; // Height of viewport in pixels
     private double pixelWidth; // Width of pixel in scene units
     private double pixelHeight; // Height of pixel in scene units
-    private Vector3D viewTopLeft;
+    private Vector3D viewTopLeft; // Point at the top-left corner of the viewport
 
     public Camera(Ray cameraRay, double focalLength, double width, double height, int resWidth, int resHeight) {
         this.cameraRay = cameraRay;
@@ -38,9 +44,62 @@ public class Camera {
     public Ray pixelRay(int pixelRight, int pixelDown) {
         Vector3D pixelPoint = viewTopLeft.add(widthVec.addScalar(pixelRight * pixelWidth + pixelWidth / 2))
                                 .subtract(heightVec.addScalar(pixelDown * pixelHeight + pixelHeight / 2));
-        System.out.println("pixelPoint(" + pixelRight + ", " + pixelDown + ") = (" + pixelPoint.getX() +
-                            "," + pixelPoint.getY() + ", " + pixelPoint.getZ() + ")");
         return new Ray(cameraRay.getOrigin(), pixelPoint.subtract(cameraRay.getOrigin()));
     }
 
+    public void saveImage(Scene scene, String filename) {
+        BufferedImage image = new BufferedImage(resWidth, resHeight, BufferedImage.TYPE_BYTE_BINARY);
+
+        for (int down = 0; down < resHeight; down++) {
+            for (int right = 0; right < resWidth; right++) {
+                Color pixelColor = traceRay(pixelRay(right, down), scene);
+                image.setRGB(right, down, pixelColor.getRGB());
+            }
+        }
+
+        File outFile = new File(filename);
+        try {
+            ImageIO.write(image, "png", outFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Color traceRay(Ray ray, Scene scene){
+        Primitive closeObject = new Sphere();
+        Vector3D closePoint = new Vector3D();
+
+        for (Primitive object : scene.getObjectList()) {
+            Vector3D iSect = object.intersect(ray);
+
+            if (!(iSect.getX() == 0 && iSect.getY() == 0 && iSect.getZ() == 0)) {
+                if (closePoint.getX() == 0 && closePoint.getY() == 0 && closePoint.getZ() == 0) {
+                    closePoint = iSect;
+                    closeObject = object;
+                } else if (iSect.subtract(ray.getOrigin()).magnitudeSquared() <
+                            closePoint.subtract(ray.getOrigin()).magnitudeSquared()) {
+                    closePoint = iSect;
+                    closeObject = object;
+                }
+            }
+        }
+
+        if (closePoint.getX() == 0 && closePoint.getY() == 0 && closePoint.getZ() == 0) {
+            return scene.getBGColor();
+        }
+
+        System.out.println("hit object");
+        double sumIntensity = 0;
+
+        for (Light light : scene.getLightList()) {
+            Vector3D lightVec = light.getPoint().subtract(closePoint).unitVector();
+            sumIntensity += light.getIntensity() * lightVec.dotProduct(closeObject.normal(closePoint));
+        }
+
+        int red = (int)(closeObject.getColor().getRed() * sumIntensity);
+        int blue = (int)(closeObject.getColor().getGreen() * sumIntensity);
+        int green = (int)(closeObject.getColor().getBlue() * sumIntensity);
+
+        return new Color(red, blue, green);
+    }
 }

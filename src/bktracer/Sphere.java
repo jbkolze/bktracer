@@ -1,23 +1,32 @@
 package bktracer;
 
+import java.awt.*;
+
 /**
  * Created by brandon on 5/6/14.
  */
 public class Sphere extends Primitive {
+    private Color color;
     private Vector3D center;
     private double radius;
     private double radiusSquared;
 
     public Sphere() {
-        center = new Vector3D();
         radius = 1;
         radiusSquared = 1;
+        center = new Vector3D();
+        color = new Color(255, 255, 255);
     }
 
-    public Sphere(double radius, Vector3D center){
+    public Sphere(double radius, Vector3D center, Color color){
         this.radius = radius;
         this.radiusSquared = radius*radius;
         this.center = center;
+        this.color = color;
+    }
+
+    public Color getColor(){
+        return color;
     }
 
     public Vector3D intersect(Ray ray){
@@ -44,11 +53,10 @@ public class Sphere extends Primitive {
         return ray.findT(t);
     }
 
-    public Ray normal(Vector3D point) {
+    public Vector3D normal(Vector3D point) {
         double x = (point.getX() - center.getX()) / radius;
         double y = (point.getY() - center.getY()) / radius;
         double z = (point.getZ() - center.getZ()) / radius;
-        Vector3D direction = new Vector3D(x, y, z);
-        return new Ray(point, direction);
+        return new Vector3D(x, y, z).unitVector();
     }
 }
