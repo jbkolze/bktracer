@@ -39,6 +39,8 @@ public class Vector3D {
         return new Vector3D(x - subVec.x, y - subVec.y, z - subVec.z);
     }
 
+    public Vector3D addScalar(double scalar) { return new Vector3D(x * scalar, y * scalar, z * scalar); }
+
     public double dotProduct(Vector3D dotProd) {
         return x * dotProd.x + y * dotProd.y + z * dotProd.z;
     }
