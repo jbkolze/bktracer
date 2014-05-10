@@ -48,7 +48,7 @@ public class Camera {
     }
 
     public void saveImage(Scene scene, String filename) {
-        BufferedImage image = new BufferedImage(resWidth, resHeight, BufferedImage.TYPE_BYTE_BINARY);
+        BufferedImage image = new BufferedImage(resWidth, resHeight, BufferedImage.TYPE_INT_RGB);
 
         for (int down = 0; down < resHeight; down++) {
             for (int right = 0; right < resWidth; right++) {
@@ -63,6 +63,7 @@ public class Camera {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     public Color traceRay(Ray ray, Scene scene){
@@ -95,6 +96,9 @@ public class Camera {
             Vector3D lightVec = light.getPoint().subtract(closePoint).unitVector();
             sumIntensity += light.getIntensity() * lightVec.dotProduct(closeObject.normal(closePoint));
         }
+
+        if(sumIntensity > 1) {sumIntensity = 1;}
+        if(sumIntensity < 0) {sumIntensity = 0;}
 
         int red = (int)(closeObject.getColor().getRed() * sumIntensity);
         int blue = (int)(closeObject.getColor().getGreen() * sumIntensity);
