@@ -89,12 +89,11 @@ public class Camera {
             return scene.getBGColor();
         }
 
-        System.out.println("hit object");
         double sumIntensity = 0;
 
         for (Light light : scene.getLightList()) {
             Vector3D lightVec = light.getPoint().subtract(closePoint).unitVector();
-            sumIntensity += light.getIntensity() * lightVec.dotProduct(closeObject.normal(closePoint));
+            sumIntensity += (light.getIntensity() * lightVec.dotProduct(closeObject.normal(closePoint)));
         }
 
         if(sumIntensity > 1) {sumIntensity = 1;}

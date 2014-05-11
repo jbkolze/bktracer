@@ -5,9 +5,9 @@ package bktracer;
  */
 public class Light {
     private Vector3D point;
-    private float intensity;
+    private double intensity;
 
-    public Light(Vector3D point, float intensity) {
+    public Light(Vector3D point, double intensity) {
         this.point = point;
         this.intensity = intensity;
     }
@@ -16,7 +16,7 @@ public class Light {
         return point;
     }
 
-    public float getIntensity() {
+    public double getIntensity() {
         return intensity;
     }
 }
