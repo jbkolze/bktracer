@@ -1,6 +1,8 @@
 package bktracer;
 
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by brandon on 5/6/14.
@@ -29,7 +31,8 @@ public class Sphere extends Primitive {
         return color;
     }
 
-    public Vector3D intersect(Ray ray){
+    public List<Intersection> intersect(Ray ray){
+        List<Intersection> intersects = new ArrayList<Intersection>();
         Vector3D originToCenter = center.subtract(ray.getOrigin());
         double lengthOCSquared = originToCenter.magnitudeSquared();
         boolean insideSphere = false;
@@ -38,19 +41,23 @@ public class Sphere extends Primitive {
         }
 
         double tClosest = originToCenter.dotProduct(ray.getDirection());
-        if (tClosest < 0 && !insideSphere) return new Vector3D();
+        if (tClosest < 0 && !insideSphere) return intersects;
 
         double tHalfChordSquared = radiusSquared - lengthOCSquared + (tClosest * tClosest);
-        if (tHalfChordSquared < 0) return new Vector3D();
+        if (tHalfChordSquared < 0) return intersects;
 
         double t;
         if (insideSphere) {
             t = tClosest + Math.sqrt(tHalfChordSquared);
+            intersects.add(new Intersection(t, ray.findT(t), this));
         } else {
             t = tClosest - Math.sqrt(tHalfChordSquared);
+            intersects.add(new Intersection(t, ray.findT(t), this));
+            double t2 = tClosest + Math.sqrt(tHalfChordSquared); // Check for ray tangent to sphere
+            if (t2 > t) {intersects.add(new Intersection(t2, ray.findT(t2), this));}
         }
 
-        return ray.findT(t);
+        return intersects;
     }
 
     public Vector3D normal(Vector3D point) {

@@ -67,27 +67,14 @@ public class Camera {
     }
 
     public Color traceRay(Ray ray, Scene scene){
-        Primitive closeObject = new Sphere();
-        Vector3D closePoint = new Vector3D();
 
-        for (Primitive object : scene.getObjectList()) {
-            Vector3D iSect = object.intersect(ray);
+        ray.findIntersections(scene);
+        Intersection closest = ray.closestIntersect();
 
-            if (!(iSect.getX() == 0 && iSect.getY() == 0 && iSect.getZ() == 0)) {
-                if (closePoint.getX() == 0 && closePoint.getY() == 0 && closePoint.getZ() == 0) {
-                    closePoint = iSect;
-                    closeObject = object;
-                } else if (iSect.subtract(ray.getOrigin()).magnitudeSquared() <
-                            closePoint.subtract(ray.getOrigin()).magnitudeSquared()) {
-                    closePoint = iSect;
-                    closeObject = object;
-                }
-            }
-        }
+        if (closest == null) { return scene.getBGColor(); }
 
-        if (closePoint.getX() == 0 && closePoint.getY() == 0 && closePoint.getZ() == 0) {
-            return scene.getBGColor();
-        }
+        Vector3D closePoint = closest.getPoint();
+        Primitive closeObject = closest.getObject();
 
         double sumIntensity = 0;
 
