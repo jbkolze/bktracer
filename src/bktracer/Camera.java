@@ -67,6 +67,7 @@ public class Camera {
     }
 
     public Color traceRay(Ray ray, Scene scene){
+        // TODO: Move function to Ray class
 
         ray.findIntersections(scene);
         Intersection closest = ray.closestIntersect();
@@ -78,6 +79,7 @@ public class Camera {
 
         double sumIntensity = 0;
 
+        // TODO: Check for objects blocking light (write function)
         for (Light light : scene.getLightList()) {
             Vector3D lightVec = light.getPoint().subtract(closePoint).unitVector();
             sumIntensity += (light.getIntensity() * lightVec.dotProduct(closeObject.normal(closePoint)));

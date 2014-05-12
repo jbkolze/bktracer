@@ -9,7 +9,7 @@ public class Main {
 	    Camera testCam = new Camera(camRay, 400, 640, 480, 640, 480);
 
         Scene testScene = new Scene(new Color(200, 200, 200));
-        Sphere testSphere = new Sphere(150, new Vector3D(0, 0, -200), new Color(150, 82, 2));
+        Sphere testSphere = new Sphere(150, new Vector3D(0, 0, -200), new Color(0, 0, 255));
         testScene.addObject(testSphere);
         //testScene.addLight(new Light(new Vector3D(300, 300, 100), 1));
         testScene.addLight(new Light(new Vector3D(-150, -150, 100), 1));
