@@ -35,7 +35,7 @@ public class Camera {
         widthVec = cameraRay.getDirection().crossProduct(upVec).unitVector();
         heightVec = widthVec.crossProduct(cameraRay.getDirection()).unitVector();
         viewTopLeft = cameraRay.findT(focalLength).add(heightVec.addScalar(height / 2)).
-                        subtract(widthVec.addScalar(width / 2));
+                subtract(widthVec.addScalar(width / 2));
 
         pixelWidth = width / resWidth;
         pixelHeight = height / resHeight;
@@ -43,7 +43,7 @@ public class Camera {
 
     public Ray pixelRay(int pixelRight, int pixelDown) {
         Vector3D pixelPoint = viewTopLeft.add(widthVec.addScalar(pixelRight * pixelWidth + pixelWidth / 2))
-                                .subtract(heightVec.addScalar(pixelDown * pixelHeight + pixelHeight / 2));
+                .subtract(heightVec.addScalar(pixelDown * pixelHeight + pixelHeight / 2));
         return new Ray(cameraRay.getOrigin(), pixelPoint.subtract(cameraRay.getOrigin()));
     }
 
@@ -52,7 +52,7 @@ public class Camera {
 
         for (int down = 0; down < resHeight; down++) {
             for (int right = 0; right < resWidth; right++) {
-                Color pixelColor = traceRay(pixelRay(right, down), scene);
+                Color pixelColor = pixelRay(right, down).traceRay(scene);
                 image.setRGB(right, down, pixelColor.getRGB());
             }
         }
@@ -64,34 +64,5 @@ public class Camera {
             e.printStackTrace();
         }
 
-    }
-
-    public Color traceRay(Ray ray, Scene scene){
-        // TODO: Move function to Ray class
-
-        ray.findIntersections(scene);
-        Intersection closest = ray.closestIntersect();
-
-        if (closest == null) { return scene.getBGColor(); }
-
-        Vector3D closePoint = closest.getPoint();
-        Primitive closeObject = closest.getObject();
-
-        double sumIntensity = 0;
-
-        // TODO: Check for objects blocking light (write function)
-        for (Light light : scene.getLightList()) {
-            Vector3D lightVec = light.getPoint().subtract(closePoint).unitVector();
-            sumIntensity += (light.getIntensity() * lightVec.dotProduct(closeObject.normal(closePoint)));
-        }
-
-        if(sumIntensity > 1) {sumIntensity = 1;}
-        if(sumIntensity < 0) {sumIntensity = 0;}
-
-        int red = (int)(closeObject.getColor().getRed() * sumIntensity);
-        int blue = (int)(closeObject.getColor().getGreen() * sumIntensity);
-        int green = (int)(closeObject.getColor().getBlue() * sumIntensity);
-
-        return new Color(red, blue, green);
     }
 }

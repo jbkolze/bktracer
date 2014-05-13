@@ -49,12 +49,12 @@ public class Sphere extends Primitive {
         double t;
         if (insideSphere) {
             t = tClosest + Math.sqrt(tHalfChordSquared);
-            intersects.add(new Intersection(t, ray.findT(t), this));
+            if (t > 0.00005) {intersects.add(new Intersection(t, ray.findT(t), this));}
         } else {
             t = tClosest - Math.sqrt(tHalfChordSquared);
-            intersects.add(new Intersection(t, ray.findT(t), this));
+            if (t > 0.00005) {intersects.add(new Intersection(t, ray.findT(t), this));}
             double t2 = tClosest + Math.sqrt(tHalfChordSquared); // Check for ray tangent to sphere
-            if (t2 > t) {intersects.add(new Intersection(t2, ray.findT(t2), this));}
+            if (t2 > t && t2 > 0.00005) {intersects.add(new Intersection(t2, ray.findT(t2), this));}
         }
 
         return intersects;

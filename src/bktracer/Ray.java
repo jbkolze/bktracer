@@ -1,5 +1,6 @@
 package bktracer;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,44 @@ public class Ray {
         double y = origin.getY() + direction.getY() * t;
         double z = origin.getZ() + direction.getZ() * t;
         return new Vector3D(x, y, z);
+    }
+
+    public Color traceRay(Scene scene){
+
+        findIntersections(scene);
+        Intersection closest = closestIntersect();
+
+        if (closest == null) { return scene.getBGColor(); }
+
+        double sumIntensity = calcShadows(closest, scene);
+
+        if(sumIntensity > 1) {sumIntensity = 1;}
+        if(sumIntensity < 0) {sumIntensity = 0;}
+
+        Color objColor = closest.getObject().getColor();
+        int red = (int)(objColor.getRed() * sumIntensity);
+        int blue = (int)(objColor.getGreen() * sumIntensity);
+        int green = (int)(objColor.getBlue() * sumIntensity);
+
+        return new Color(red, blue, green);
+    }
+
+    public double calcShadows(Intersection curIntersect, Scene scene) {
+        double sumIntensity = 0;
+
+        for (Light light : scene.getLightList()) {
+            Ray toLight = new Ray(curIntersect.getPoint(), light.getPoint().subtract(curIntersect.getPoint()).unitVector());
+            toLight.findIntersections(scene);
+            Intersection closest = toLight.closestIntersect();
+
+            double lightDist = light.getPoint().subtract(toLight.getOrigin()).magnitude();
+            if ((closest != null && lightDist < closest.getT()) || closest == null) {
+                sumIntensity += light.getIntensity() *
+                        toLight.getDirection().dotProduct(curIntersect.getObject().normal(curIntersect.getPoint()));
+            }
+        }
+
+        return sumIntensity;
     }
 
     public void findIntersections(Scene scene){
